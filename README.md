@@ -1,1 +1,3 @@
-# Lab1-Paradigmas
+# To Do List:
+- read the instructions
+- create the tda 
