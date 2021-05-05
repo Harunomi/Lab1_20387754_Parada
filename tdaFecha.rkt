@@ -1,4 +1,5 @@
 #lang racket
+(provide (all-defined-out))
 ;TDA FECHA
 ;Representacion del TDA: (integer x integer x integer) o bien (list day month year)
 
@@ -72,7 +73,7 @@
 ;Recorrido: fecha
 (define(changeMonth entrada newMonth)
   (if (esFecha? entrada)
-      (crearFecha (getDay entrada) nuevoMes (getYear entrada))
+      (crearFecha (getDay entrada) newMonth (getYear entrada))
       null
       )
   )
@@ -82,7 +83,7 @@
 ;Recorrido: fecha
 (define(changeYear entrada newYear)
   (if (esFecha? entrada)
-      (crearFecha (getDay entrada) (getMonth entrada) newyear)
+      (crearFecha (getDay entrada) (getMonth entrada) newYear)
       null
       )
   )
