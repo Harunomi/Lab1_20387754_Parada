@@ -1,3 +1,7 @@
 # To Do List:
-- read the instructions
-- create the tda 
+- read the instructions / done
+- create the tda:
+  -tdaFecha / done
+  -tdaUser / done
+  -tdaNetwork
+  -tdaPublicacion
