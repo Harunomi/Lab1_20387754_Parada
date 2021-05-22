@@ -137,17 +137,8 @@
     )
   )
 
-; Descripcion: Crea una nueva publicacion con una nueva lista de comentarios
-; Dominio: TDA Publicacion x list
-; Recoriddo: TDA Publicacion
-(define cambiarComments
-  (lambda (publicacion nuevoComment)
-    (if (and(esPublicacion? publicacion) (list? nuevoComment))
-        (crearPublicacion (getTextoPublicacion publicacion)(getAttachedFile publicacion)(getReacts publicacion) nuevoComment (getFechaPublicacion publicacion)) ;; this need a better implementation, since comments is a list and i can't just add a element to a list by doing this
-        null
-        )
-    )
-  )
+; la implementacion de cambiar comentario fue ignorada a proposito, puesto que es preferible primero implementar una
+; funcion para buscar comentarios existentes y luego actualizar la lista de comentarios
 
 ; Descripcion: Crea una nueva publicacion modificando la fecha 
 ; Dominio: TDA Publicacion x fecha
