@@ -1,5 +1,6 @@
 #lang racket
 (require "tdaFecha.rkt")
+(provide (all-defined-out))
 ; TDA USER
 ; Representacion del TDA: (string x string x fecha x integer x integer)
 ; (list nickname password fecha publicaciones amigos) 
@@ -8,20 +9,24 @@
 ; Descripcion: Crea un usuario
 ; Dominio: string x string x fecha x integer x integer
 ; Recorrido: list
-(define (crearUsuario username password fechaCreacion nPublicaciones nAmigos)
+(define crearUsuario
+  (lambda (username password fechaCreacion nPublicaciones nAmigos)
   (if (and(string? username) (string? password)(string>? password "abcde") (esFecha? fechaCreacion) (integer? nPublicaciones)(integer? nAmigos))
       (list username password fechaCreacion nPublicaciones nAmigos)
       null
       )
+    )
   )
 
 ; PERTENENCIA
 ; Descripcion: Funcion que evalua si la entrada pertenece al TDA User
 ; Dominio: elemento de cualquier tipo
 ; Recorrido: un booleano
-(define (esUser? entrada)
+(define esUser?
+  (lambda (entrada)
   (and (list? entrada) ( = (length entrada) 5)
        (not (null? (crearUsuario (car entrada) (cadr entrada) (caddr entrada) (cadddr entrada) (caddddr entrada)))))
+    )
   )
 
 ; SELECTORES
@@ -30,101 +35,121 @@
 ; Dominio: User
 ; Recorrido: string
 
-(define (getUsername entrada)
+(define getUsername
+  (lambda (entrada)
   (if (esUser? entrada)
       (car entrada)
       0
       )
+    )
   )
 
 ; Descripcion: Funcion que permite obtener la contraseña de un user
 ; Dominio: User
 ; Recorrido: string
-(define (getPassword entrada)
+(define getPassword
+  (lambda (entrada)
   (if (esUser? entrada)
       (cadr entrada)
       0
       )
+    )
   )
 
 ; Descripcion: Funcion que permite obtener la fecha de creacion del user
 ; Dominio: user
 ; Recorrido: Fecha
-(define (getFechaCreacion entrada)
+(define getFechaCreacion
+  (lambda (entrada)
   (if (esUser? entrada)
       (caddr entrada)
       0
       )
+    )
   )
 ; Descripcion: Funcion que permite obtener la cantidad de publicaciones del user
 ; Dominio: user
 ; Recorrido: integer
-(define (getnPublicaciones entrada)
+(define getnPublicaciones
+  (lambda (entrada)
   (if (esUser? entrada)
       (cadddr entrada)
       0
       )
+    )
   )
 
 ; Descripcion: Funcion que permite obtener la cantidad de amigos de un user
 ; Dominio: user
 ; Recorrido: integer
-(define (getnAmigos entrada)
+(define getnAmigos
+  (lambda (entrada)
   (if (esUser? entrada)
       (caddddr entrada)
       0
       )
+    )
   )
 ; MODIFICADORES
 
 ; Descripcion: Crea una lista nueva a partir de la entregada, modificando el dato del nicnkame
 ; dominio: user x string
 ; Recorrido: user
-(define (changeNickname entrada newNick)
+(define changeNickname
+  (lambda (entrada newNick)
   (if (esUser? entrada)
       (crearUsuario newNick (getPassword entrada) (getFechaCreacion entrada) (getnPublicaciones entrada) (getnAmigos entrada))
       null
       )
+    )
   )
 
 ; Descripcion: Crea una lista nueva a partir de la entregada, pero con un nueva contraseña
 ; Dominio: User x string
 ; Recorrido: User
-(define (changePassword entrada newPassword)
+(define changePassword
+  (lambda (entrada newPassword)
   (if (esUser? entrada)
       (crearUsuario (getUsername entrada) newPassword (getFechaCreacion entrada) (getnPublicaciones entrada) (getnAmigos entrada))
       null
       )
+    )
   )
 
 ; Descripcion: Crea una lista nueva a partir de la entregada pero con una nueva fecha de creacion?
 ; Dominio: User x fecha
 ; Recorrido: User
-(define (changeFechaCreacion entrada newFechaCreacion)
+(define changeFechaCreacion
+  (lambda (entrada newFechaCreacion)
   (if  (and (esUser? entrada) (esFecha? newFechaCreacion))
       (crearUsuario (getUsername entrada) (getPassword entrada) newFechaCreacion (getnPublicaciones entrada) (getnAmigos entrada))
       null
       )
   )
+  )
 
 ; Descripcion: Crea una lista nueva a partir de la entregada, con una nueva cantidad de publicaciones
 ; Dominio: User x integer
 ; Recorrido: User
-(define (changenPublicaciones entrada newnPublicaciones)
+(define changenPublicaciones
+  (lambda (entrada newnPublicaciones)
   (if (esUser? entrada)
       (crearUsuario (getUsername entrada) (getPassword entrada) (getFechaCreacion entrada) newnPublicaciones (getnAmigos entrada))
       null
       )
+    )
   )
 
 ; Descripcion: Crea una lista nueva a partir de la entregada cambiando la cantidad de amigos
 ; Dominio: User x integer
 ; Recorrido: User
-(define (changenAmigos entrada newnAmigos)
+(define changenAmigos
+  (lambda (entrada newnAmigos)
   (if (esUser? entrada)
       (crearUsuario (getUsername entrada) (getPassword entrada) (getFechaCreacion entrada) (getnPublicaciones entrada) newnAmigos)
       null
       )
+    )
   )
 
 
