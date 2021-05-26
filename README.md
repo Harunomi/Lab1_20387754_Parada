@@ -3,5 +3,6 @@
 - create the tda:
 - tdaFecha / done
 - tdaUser / done
-- tdaPublicacion / almost done, need some modification to the comments sections
-- gotta check the implementation once of all the previous TDA before starting working on the big fat TDA SocialNetwork
+- tdaPublicacion / done 
+- tdaSocialNetwork - partially done, because im adding functions as i go
+- main.rkt - register and login done
