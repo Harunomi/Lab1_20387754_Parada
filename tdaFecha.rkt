@@ -9,7 +9,7 @@
 ;Recorrido: list
 (define crearFecha
   (lambda (day month year)
-    (if (and(integer? day)(integer? month)(integer? year)(> day 0)(< day 32)(> month 0)(< month 13)(> year 0))
+    (if (and (integer? day) (integer? month)(integer? year)(> day 0)(< day 32)(> month 0)(< month 13)(> year 0))
         (list day month year)
          null
          )
@@ -103,4 +103,3 @@
         )
     )
   )
-

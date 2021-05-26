@@ -2,17 +2,17 @@
 (require "tdaFecha.rkt")
 (provide (all-defined-out))
 ; TDA USER
-; Representacion del TDA: (string x string x fecha x integer x integer)
-; (list nickname password fecha publicaciones amigos) 
+; Representacion del TDA: (intger x string x string x fecha x list x list)
+; (list nickname password fecha followers posts) 
 
 ; CONSTRUCTOR
 ; Descripcion: Crea un usuario
-; Dominio: string x string x fecha x integer x integer
+; Dominio: integer x string x string x fecha x list x list
 ; Recorrido: list
 (define crearUsuario
-  (lambda (username password fechaCreacion nPublicaciones nAmigos)
-  (if (and(string? username) (string? password)(string>? password "abcde") (esFecha? fechaCreacion) (integer? nPublicaciones)(integer? nAmigos))
-      (list username password fechaCreacion nPublicaciones nAmigos)
+  (lambda (ID username password fechaCreacion followers posts)
+    (if (and (integer? ID) (string? username) (string? password) (esFecha? fechaCreacion) (list? followers)(list? posts))
+      (list ID username password fechaCreacion followers posts)
       null
       )
     )
@@ -24,22 +24,33 @@
 ; Recorrido: un booleano
 (define esUser?
   (lambda (entrada)
-  (and (list? entrada) ( = (length entrada) 5)
-       (not (null? (crearUsuario (car entrada) (cadr entrada) (caddr entrada) (cadddr entrada) (caddddr entrada)))))
+  (and (list? entrada) ( = (length entrada) 6)
+       (not (null? (crearUsuario (getUserID entrada) (getUsername entrada)(getPassword entrada)(getUserFecha entrada)(getUserFollowers entrada)(getUserPosts entrada)))))
     )
   )
 
 ; SELECTORES
 
+; Descripcion: Permite obtener la ID de un usuario
+; Dominio: user
+; Recorrido: integer
+(define getUserID
+  (lambda (entrada)
+    (if (not(null? entrada))
+        (car entrada)
+        null
+        )
+    )
+  )
+
 ; Descripcion: Funcion que permite obtener el nombre de usuario de un user
 ; Dominio: User
 ; Recorrido: string
-
 (define getUsername
   (lambda (entrada)
-  (if (esUser? entrada)
-      (car entrada)
-      0
+    (if (not(null? entrada))
+      (car(cdr entrada))
+      null
       )
     )
   )
@@ -49,9 +60,9 @@
 ; Recorrido: string
 (define getPassword
   (lambda (entrada)
-  (if (esUser? entrada)
-      (cadr entrada)
-      0
+    (if (not(null? entrada))
+      (car(cdr(cdr entrada)))
+      null
       )
     )
   )
@@ -59,46 +70,50 @@
 ; Descripcion: Funcion que permite obtener la fecha de creacion del user
 ; Dominio: user
 ; Recorrido: Fecha
-(define getFechaCreacion
+(define getUserFecha
   (lambda (entrada)
-  (if (esUser? entrada)
-      (caddr entrada)
-      0
+    (if (not(null? entrada))
+      (car(cdr(cdr(cdr entrada))))
+      null
       )
     )
   )
-; Descripcion: Funcion que permite obtener la cantidad de publicaciones del user
+; Descripcion: Funcion que permite obtener la lista de followers de un user
 ; Dominio: user
-; Recorrido: integer
-(define getnPublicaciones
+; Recorrido: list
+(define getUserFollowers
   (lambda (entrada)
-  (if (esUser? entrada)
-      (cadddr entrada)
-      0
+    (if (not(null? entrada))
+      (car(cdr(cdr(cdr(cdr entrada)))))
+      null
       )
     )
   )
 
-; Descripcion: Funcion que permite obtener la cantidad de amigos de un user
+; Descripcion: Funcion que permite obtener los posts de un user 
 ; Dominio: user
-; Recorrido: integer
-(define getnAmigos
+; Recorrido: list
+(define getUserPosts
   (lambda (entrada)
-  (if (esUser? entrada)
-      (caddddr entrada)
-      0
+    (if (not(null? entrada))
+      (car(cdr(cdr(cdr(cdr(cdr entrada))))))
+      null
       )
     )
   )
 ; MODIFICADORES
+
+
+; El modificador de iD no es necesario de crear, puesto que no tiene sentido cambiar el ID de un usuario dentro de una red social 
+
 
 ; Descripcion: Crea una lista nueva a partir de la entregada, modificando el dato del nicnkame
 ; dominio: user x string
 ; Recorrido: user
 (define changeNickname
   (lambda (entrada newNick)
-  (if (esUser? entrada)
-      (crearUsuario newNick (getPassword entrada) (getFechaCreacion entrada) (getnPublicaciones entrada) (getnAmigos entrada))
+    (if (esUser? entrada)
+      (crearUsuario (getUserID entrada) newNick (getPassword entrada) (getUserFecha entrada) (getUserFollowers entrada) (getUserPosts entrada))
       null
       )
     )
@@ -109,8 +124,8 @@
 ; Recorrido: User
 (define changePassword
   (lambda (entrada newPassword)
-  (if (esUser? entrada)
-      (crearUsuario (getUsername entrada) newPassword (getFechaCreacion entrada) (getnPublicaciones entrada) (getnAmigos entrada))
+    (if (esUser? entrada)
+      (crearUsuario (getUserID entrada) (getUsername entrada) newPassword (getUserFecha entrada) (getUserFollowers entrada) (getUserPosts entrada))
       null
       )
     )
@@ -121,43 +136,12 @@
 ; Recorrido: User
 (define changeFechaCreacion
   (lambda (entrada newFechaCreacion)
-  (if  (and (esUser? entrada) (esFecha? newFechaCreacion))
-      (crearUsuario (getUsername entrada) (getPassword entrada) newFechaCreacion (getnPublicaciones entrada) (getnAmigos entrada))
-      null
-      )
-  )
-  )
-
-; Descripcion: Crea una lista nueva a partir de la entregada, con una nueva cantidad de publicaciones
-; Dominio: User x integer
-; Recorrido: User
-(define changenPublicaciones
-  (lambda (entrada newnPublicaciones)
-  (if (esUser? entrada)
-      (crearUsuario (getUsername entrada) (getPassword entrada) (getFechaCreacion entrada) newnPublicaciones (getnAmigos entrada))
+    (if  (and (esUser? entrada) (esFecha? newFechaCreacion))
+      (crearUsuario (getUserID entrada) (getUsername entrada) (getPassword entrada) newFechaCreacion (getUserFollowers entrada) (getUserPosts entrada))
       null
       )
     )
   )
 
-; Descripcion: Crea una lista nueva a partir de la entregada cambiando la cantidad de amigos
-; Dominio: User x integer
-; Recorrido: User
-(define changenAmigos
-  (lambda (entrada newnAmigos)
-  (if (esUser? entrada)
-      (crearUsuario (getUsername entrada) (getPassword entrada) (getFechaCreacion entrada) (getnPublicaciones entrada) newnAmigos)
-      null
-      )
-    )
-  )
+;******* los modificadores de followers y publicaciones fueron skippeados de esta seccion, puesto uqe se veran implementados en el main *******
 
-
-; FUNCIONES COMPLEMENTARIAS QUE NO PERTENECEN AL TDA USER
-; Descripcion: permite acceder al 5 elemento de una lista
-; Dominio: list
-; Recorrido: cualquier elemento
-; CADDDR
-(define (caddddr lista)
-  (car(cdr(cdr(cdr(cdr lista)))))
-  )
