@@ -6,8 +6,8 @@
 
 (define encrypt (lambda (s) (list->string (reverse (string->list s)))))
 
-(define user1 (crearUsuario 1 "asagaki" "culo" '(25 5 2021) null null))
-(define user2 (crearUsuario 2 "cyb" "culo" '(25 5 2021) null null))
+(define user1 (crearUsuario 1 "Harunomi" "123" '(25 5 2021) null null))
+(define user2 (crearUsuario 2 "Hylia" "321" '(25 5 2021) null null))
 
 
 ; TDA SocialNetwork
@@ -22,7 +22,7 @@
 (define crearRedSocial
   (lambda (nombre fecha encrypt decrypt)
     (if (and(string? nombre)(esFecha? fecha))
-        (crearRedSocialAux nombre fecha '() '() '() encrypt decrypt )
+        (crearRedSocialAux nombre fecha '() '() 0 encrypt decrypt )
         null
         )
     )
@@ -32,9 +32,9 @@
 ; Dominio: string x TDA fecha x tdaUsuarios x TDA Publicacion
 ; Recorrido list
 (define crearRedSocialAux
-  (lambda (nombre fecha usuarios publicaciones usuariosOnline encrypt decrypt)
-    (if (and (string? nombre) (esFecha? fecha) (list? usuarios)(list? publicaciones) (list? usuariosOnline))
-        (list nombre fecha usuarios publicaciones usuariosOnline encrypt decrypt)
+  (lambda (nombre fecha usuarios publicaciones usuarioOnline encrypt decrypt)
+    (if (and (string? nombre) (esFecha? fecha) (list? usuarios)(list? publicaciones) (integer? usuarioOnline))
+        (list nombre fecha usuarios publicaciones usuarioOnline encrypt decrypt)
         null
         )
     )
@@ -92,7 +92,7 @@
 ; Descripcion: funcion que permite obtener la lista de usuarios online en una red social
 ; Dominio: TDA social network
 ; recorrido: list
-(define getUsuariosOnline
+(define getUsuarioOnline
   (lambda (entrada)
     (if (list? entrada)
         (car(cdr(cdr(cdr(cdr entrada)))))
@@ -128,7 +128,7 @@
   (lambda (entrada)
     (and (list? entrada) (= (length entrada) 7)
          (not(null? (crearRedSocialAux (getNombreRedSocial entrada) (getFechaRedSocial entrada) (getUsuariosRedSocial entrada) (getPublicacionesRedSocial entrada)
-                            (getUsuariosOnline entrada)(getEncryptFn entrada)(getDecryptFn entrada))))
+                            (getUsuarioOnline entrada)(getEncryptFn entrada)(getDecryptFn entrada))))
          )
     )
   )
@@ -166,6 +166,73 @@
         )
     )
   )
+
+; Descripcion: funcion que permite agregar una publicacion a la lista de publicaciones
+; Dominio: list x publicacion
+; recorrido: list
+(define agregarPublicacion
+  (lambda (lista publicacion)
+    (if (equal? lista null)
+        (list publicacion)
+        (cons (car lista) (agregarPublicacion (cdr lista) publicacion))
+        )
+    )
+  )
+
+; Descripcion: funcion que permite actualizar un usuario dada una lista y un nuevo usuario a actualizar
+; Dominio: lista x usuario
+; Recorrido: lista
+(define actualizarUsuario
+  (lambda (listaUsuarios usuario)
+    (if (equal? listaUsuarios null)
+        (list usuario) 
+        (if (equal? (getUserID usuario) (getUserID (car listaUsuarios)))
+           (actualizarUsuario (cdr listaUsuarios) usuario)
+           (cons (car listaUsuarios) (actualizarUsuario (cdr listaUsuarios) usuario))
+           )
+        )
+    )
+  )
+
+; Descripcion: funcion que permite actualizar una publicacion dada una lista y un nuevo usuario a actualizar
+; Dominio: lista x publicacion
+; recorrido: lista
+(define actualizarPublicacion
+  (lambda (lista publicacion)
+    (if (equal? lista null)
+        (list publicacion)
+        (if (equal? (getPublicacionID publicacion) (getPublicacionID (car lista)))
+            (actualizarPublicacion (cdr lista) publicacion)
+            (cons (car lista) (actualizarPublicacion (cdr lista) publicacion))
+            )
+        )
+    )
+  )
+
+; Descripcion: funcion que devuelve el ID del autor de una publicacion dada una ID de una publicacion
+; Dominio: redSocial x integer
+; Recorrido: integer
+(define publicacionToAutor
+  (lambda (redSocial ID)
+    (if (equal? (getPublicacionesRedSocial redSocial) null)
+        (display "la publicacion no existe")
+        (if (existePublicacion? ID (getUserPosts (car (getUsuariosRedSocial redSocial))))
+            (getUserID (car (getUsuariosRedSocial redSocial)))
+            (publicacionToAutor (crearRedSocialAux (getNombreRedSocial redSocial)
+                                                   (getFechaRedSocial redSocial)
+                                                   (cdr (getUsuariosRedSocial redSocial))
+                                                   (getPublicacionesRedSocial redSocial)
+                                                   (getUsuarioOnline redSocial)
+                                                   (getEncryptFn redSocial)
+                                                   (getDecryptFn redSocial)
+                                                   )
+                                ID)
+            )
+        )
+    )
+  )
+
+                    
             
 
 

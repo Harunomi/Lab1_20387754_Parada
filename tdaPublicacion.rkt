@@ -12,9 +12,9 @@
 ; Dominio: integer x string x string x integer x list x fecha x list
 ; recorrido: list
 (define crearPublicacion
-  (lambda (ID text reacts comments fecha tags)
-    (if (and (integer? ID) (string? text) (list? reacts) (list? comments) (esFecha? fecha) (list? tags) )
-          (list ID text reacts comments fecha tags)
+  (lambda (ID text reacts comments fecha tags shared)
+    (if (and (integer? ID) (string? text) (list? reacts) (list? comments) (esFecha? fecha) (list? tags) (list? shared) )
+          (list ID text reacts comments fecha tags shared)
           null
           )
     )
@@ -78,7 +78,16 @@
 ; Recorrido: list
 (define getTags
   (lambda (entrada)
-    (car(cdr(cdr(cdr(cdr(cdr publicacion))))))
+    (car(cdr(cdr(cdr(cdr(cdr entrada))))))
+    )
+  )
+
+; Descripcion: funcion que permite obtener la lista de compartidos
+; Dominio: TDA publicacion
+; Recorrido: list
+(define getShared
+  (lambda (entrada)
+    (car (cdr(cdr(cdr(cdr(cdr(cdr entrada)))))))
     )
   )
 
@@ -89,10 +98,18 @@
 ; recorrido: bool
 (define esPublicacion?
   (lambda (entrada)
-    (and (list? entrada) ( = (length entrada 6))
-         (not (null? (crearPublicacion (getPublicacionID entrada) (getTextoPublicacion entrada) (getReacts entrada)(getComments entrada)(getFechaPublicacion entrada) (getTags entrada))))
+    (and (list? entrada) ( = (length entrada 7))
+         (not (null? (crearPublicacion
+                      (getPublicacionID entrada)
+                      (getTextoPublicacion entrada)
+                      (getReacts entrada)
+                      (getComments entrada)
+                      (getFechaPublicacion entrada)
+                      (getTags entrada)
+                      (getShared entrada)))
         )
     )
+  )
   )
 
 ; MODIFICADORES
@@ -118,13 +135,55 @@
 (define cambiarFechaPublicacion
   (lambda (publicacion nuevaFechaPublicacion)
     (if (and(esPublicacion? publicacion) (esFecha? nuevaFechaPublicacion))
-        (crearPublicacion (getPublicacionID publicacion) (getTextoPublicacion publicacion) (getReacts publicacion)(getComments publicacion)nuevaFechaPublicacion)
+        (crearPublicacion (getPublicacionID publicacion)
+                          (getTextoPublicacion publicacion)
+                          (getReacts publicacion)
+                          (getComments publicacion)
+                          nuevaFechaPublicacion)
         null
         )
     )
   )
 
 
+; FUNCIONES AUXILIARES
+
+; Descripcion: funcion que permite encontrar una publicacion dada su iD y una lista de publicaciones
+; dominio: integer x list
+; recorrido: bool
+(define existePublicacion?
+  (lambda (ID lista)
+    (if (equal? lista null)
+        #f
+        (if (equal? ID (getPublicacionID (car lista)))
+            #t
+            (existePublicacion? ID (cdr lista))
+            )
+        )
+    )
+  )
+
+; Descripcion: funcion que permite devolver una publicacion dada su ID y una lista de publicaciones
+; dominio: integer x list
+; recorrido: tdaPublicacion
+(define IDtoPublicacion
+  (lambda (ID lista)
+    (if (equal? lista null)
+        #f
+        (if (equal? ID (getPublicacionID (car lista)))
+            (car lista)
+            (IDtoPublicacion ID (cdr lista))
+            )
+        )
+    )
+  )
+
+
+                                
+
+
+            
+            
             
     
   
