@@ -1,8 +1,2 @@
-# To Do List:
-- read the instructions / done
-- create the tda:
-- tdaFecha / done
-- tdaUser / done
-- tdaPublicacion / done 
-- tdaSocialNetwork - partially done, because im adding functions as i go
-- main.rkt - register and login done
+# Readme:
+El cambio de los archivos se puede ver en los archivos que no contienen el rut y nombre, tales como main.rkt, tdaUser.rkt, etc.
